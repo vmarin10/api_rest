@@ -9,11 +9,22 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @PostMapping("/register")
+    public UserModel register(@RequestBody UserModel user) {
+        return userService.register(user);
+
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody UserModel user) {
+
+        return userService.verify(user);
+    }
 
     @GetMapping
     public List<UserModel> getUsers() {

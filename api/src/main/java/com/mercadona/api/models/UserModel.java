@@ -23,6 +23,4 @@ public class UserModel {
     @Column
     private String email;
 
-
-
 }
