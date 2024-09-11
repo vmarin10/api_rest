@@ -34,14 +34,14 @@ public class UserService {
         return user;
     }
 
-    public String verify(UserModel user) throws AuthenticationException {
+    public String verify(UserModel userModel) throws AuthenticationException {
 
         String token = null;
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getName(),
-                user.getPassword()));
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(userModel.getName(),
+                userModel.getPassword()));
 
         if (authentication.isAuthenticated()) {
-            token = jwtService.generateToken();
+            token = jwtService.generateToken(userModel.getName());
         }
 
         return token;

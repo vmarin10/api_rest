@@ -10,4 +10,5 @@ public class ApiConstants {
     public static final String REGISTER_ENDPOINT = "register";
     public static final String ERROR_USER_AUTHENTICATED = "Error, this user does not exists";
 
+    public static final String KEY_GENERATOR_ALGORITHM = "HmacSHA256";
 }
