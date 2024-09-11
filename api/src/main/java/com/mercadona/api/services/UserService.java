@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,23 +25,28 @@ public class UserService {
     @Autowired
     private JWTService jwtService;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-
     public UserModel register(UserModel user) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
         user.setPassword(encoder.encode(user.getPassword()));
         iUserRepository.save(user);
+
         return user;
     }
 
-    public String verify(UserModel user) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword()));
+    public String verify(UserModel user) throws AuthenticationException {
+
+        String token = null;
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getName(),
+                user.getPassword()));
 
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken();
-        } else {
-            return "fail";
+            token = jwtService.generateToken();
         }
+
+        return token;
     }
+
 
     public List<UserModel> getUsers() {
         return iUserRepository.findAll();

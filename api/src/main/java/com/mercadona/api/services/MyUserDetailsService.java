@@ -14,8 +14,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
     private IUserRepository iUserRepository;
-
-
+    
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserModel user = iUserRepository.findByName(username);

@@ -3,10 +3,13 @@ package com.mercadona.api.controllers;
 import com.mercadona.api.models.UserModel;
 import com.mercadona.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.mercadona.api.constants.ApiConstants.ERROR_USER_AUTHENTICATED;
 
 @RestController
 public class UserController {
@@ -16,14 +19,20 @@ public class UserController {
 
     @PostMapping("/register")
     public UserModel register(@RequestBody UserModel user) {
-        return userService.register(user);
 
+        return userService.register(user);
     }
 
     @PostMapping("/login")
     public String login(@RequestBody UserModel user) {
 
-        return userService.verify(user);
+        String token;
+        try {
+            token = userService.verify(user);
+        } catch (AuthenticationException e) {
+            return ERROR_USER_AUTHENTICATED;
+        }
+        return token;
     }
 
     @GetMapping
@@ -48,7 +57,7 @@ public class UserController {
 
     @DeleteMapping(path = "/{id}")
     public String deleteUserById(@PathVariable Long id) {
-        if(this.userService.deleteUser(id)) {
+        if (this.userService.deleteUser(id)) {
             return "User " + id + " deleted";
         }
         return "Error";
