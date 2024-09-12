@@ -16,9 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.mercadona.api.constants.ApiConstants.LOGIN_ENDPOINT;
-import static com.mercadona.api.constants.ApiConstants.REGISTER_ENDPOINT;
-
 /**
  * SecurityConfig is the class that configures the security of the application using Spring Security.
  * It defines the filters and authentication mechanisms, including JWT-based security.
@@ -30,6 +27,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final EndpointConfig endpointConfig;
 
     /**
      * Constructor to inject required dependencies for the security configuration.
@@ -38,10 +36,12 @@ public class SecurityConfig {
      * @param jwtFilter          the custom filter for JWT token validation
      * @param passwordEncoder    the encoder used to hash passwords
      */
-    public SecurityConfig(UserDetailsService userDetailsService, JwtFilter jwtFilter, BCryptPasswordEncoder passwordEncoder) {
+    public SecurityConfig(UserDetailsService userDetailsService, JwtFilter jwtFilter, BCryptPasswordEncoder passwordEncoder,
+                          EndpointConfig endpointConfig) {
         this.userDetailsService = userDetailsService;
         this.jwtFilter = jwtFilter;
         this.passwordEncoder = passwordEncoder;
+        this.endpointConfig = endpointConfig;
     }
 
     /**
@@ -58,7 +58,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(LOGIN_ENDPOINT, REGISTER_ENDPOINT).permitAll()
+                        .requestMatchers(endpointConfig.getLoginEndpoint(), endpointConfig.getRegisterEndpoint()).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

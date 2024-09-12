@@ -3,13 +3,10 @@ package com.mercadona.api.controllers;
 import com.mercadona.api.models.UserModel;
 import com.mercadona.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
-import static com.mercadona.api.constants.ApiConstants.ERROR_USER_AUTHENTICATED;
 
 @RestController
 @RequestMapping("/users")
@@ -31,21 +28,6 @@ public class UserController {
     @PostMapping("/register")
     public UserModel register(@RequestBody UserModel user) {
         return userService.register(user);
-    }
-
-    /**
-     * Endpoint para iniciar sesión de un usuario.
-     *
-     * @param user Datos de inicio de sesión.
-     * @return Token JWT o mensaje de error si falla la autenticación.
-     */
-    @PostMapping("/login")
-    public String login(@RequestBody UserModel user) {
-        try {
-            return userService.verify(user);
-        } catch (AuthenticationException e) {
-            return ERROR_USER_AUTHENTICATED;
-        }
     }
 
     /**

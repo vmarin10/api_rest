@@ -3,10 +3,6 @@ package com.mercadona.api.services;
 import com.mercadona.api.models.UserModel;
 import com.mercadona.api.repositories.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +13,11 @@ import java.util.Optional;
 public class UserService {
 
     private final IUserRepository iUserRepository;
-    private final AuthenticationManager authManager;
-    private final JWTService jwtService;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(IUserRepository iUserRepository, AuthenticationManager authManager, JWTService jwtService,
-                       BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(IUserRepository iUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.iUserRepository = iUserRepository;
-        this.authManager = authManager;
-        this.jwtService = jwtService;
         this.passwordEncoder = bCryptPasswordEncoder;
     }
 
@@ -40,24 +31,6 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return iUserRepository.save(user);
-    }
-
-    /**
-     * Verificación de usuario para iniciar sesión y generación de token JWT.
-     *
-     * @param userModel Datos del usuario (nombre y contraseña).
-     * @return Token JWT si la autenticación es exitosa.
-     * @throws AuthenticationException Excepción si la autenticación falla.
-     */
-    public String verify(UserModel userModel) throws AuthenticationException {
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userModel.getName(), userModel.getPassword()));
-
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(userModel.getName());
-        }
-
-        return null;
     }
 
     /**
